@@ -64,5 +64,8 @@
   },
   "engines": {
     "node": ">= 8.16.2"
+  },
+  "dependencies": {
+    "html-element": "^2.3.1"
   }
 }
