@@ -39,7 +39,9 @@
     "rollup": "^2.21.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-license": "^2.2.0"
+    "rollup-plugin-license": "^2.2.0",
+    "rollup-plugin-livereload": "^2.0.0",
+    "html-element": "^2.3.1"
   },
   "scripts": {
     "test": "jasmine --config=jasmine.json",
@@ -64,8 +66,5 @@
   },
   "engines": {
     "node": ">= 8.16.2"
-  },
-  "dependencies": {
-    "html-element": "^2.3.1"
   }
 }

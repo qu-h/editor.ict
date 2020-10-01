@@ -221,6 +221,8 @@ export const setToolbarHandler = function () {
     var toolbarIcons        = this.toolbarIcons = toolbar.find("." + classPrefix + "menu > li > a")
     var toolbarIconHandlers = this.getToolbarHandles()
 
+    console.log(`======`, { editormd })
+
     toolbarIcons.bind(editormd.mouseOrTouch("click", "touchend"), function (event) {
         var icon                = $(this).children(".fa")
         var name                = icon.attr("name")

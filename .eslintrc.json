@@ -23,7 +23,7 @@
     // "no-var": "error"
     "key-spacing":"off",
     "quotes":"off",
-    "semi":"warn",
+    "semi":"off",
     "no-multi-spaces":"off"
   },
   "env": {

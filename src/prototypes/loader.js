@@ -33,42 +33,36 @@ export const loadQueues = function () {
                             });
                         });
                     }
-                    else if (settings.flowChart && settings.sequenceDiagram) 
-                    {  
-                        editormd.loadScript(loadPath + "flowchart.min", function() {  
-                            editormd.loadScript(loadPath + "jquery.flowchart.min", function() {
-                                editormd.loadScript(loadPath + "sequence-diagram.min", function() {
-                                    _this.loadedDisplay();
-                                });
-                            });
-                        });
+                    else if (settings.flowChart && settings.sequenceDiagram) {
+                        editormd.loadScript(loadPath + "flowchart.min", function () {
+                            editormd.loadScript(loadPath + "jquery.flowchart.min", function () {
+                                editormd.loadScript(loadPath + "sequence-diagram.min", function () {
+                                    _this.loadedDisplay()
+                                })
+                            })
+                        })
                     }
-                });
-
-            });
-        } 
-        else
-        {
-            _this.loadedDisplay()
+                })
+            })
+        } else {
+            eMd.loadedDisplay()
         }
-    }; 
+    }
 
-    this.loadCSS(loadPath + "codemirror/codemirror.min");
-    
-    if (settings.searchReplace && !settings.readOnly)
-    {
-        this.loadCSS(loadPath + "codemirror/addon/dialog/dialog");
-        this.loadCSS(loadPath + "codemirror/addon/search/matchesonscrollbar");
+    this.loadCSS(loadPath + "codemirror/codemirror.min")
+
+    if (settings.searchReplace && !settings.readOnly) {
+        this.loadCSS(loadPath + "codemirror/addon/dialog/dialog")
+        this.loadCSS(loadPath + "codemirror/addon/search/matchesonscrollbar")
     }
-    
-    if (settings.codeFold)
-    {
-        this.loadCSS(loadPath + "codemirror/addon/fold/foldgutter");            
+
+    if (settings.codeFold) {
+        this.loadCSS(loadPath + "codemirror/addon/fold/foldgutter")
     }
-    
-    this.loadScript(loadPath + "codemirror/codemirror.min", function() {
+
+    eMd.loadScript(loadPath + "codemirror/codemirror.min", function () {
         eMd.$CodeMirror = CodeMirror;
-        
+
         eMd.loadScript(loadPath + "codemirror/modes.min", function () {
             eMd.loadScript(loadPath + 'codemirror/addons.min', function () {
                 // console.log('loader codemirror')
@@ -82,24 +76,19 @@ export const loadQueues = function () {
                 }
                 eMd.setToolbar()
 
-                eMd.loadScript(loadPath + "marked.min", function() {
+                eMd.loadScript(loadPath + "marked.min", function () {
                     eMd.$marked = marked;
 
                     if (settings.previewCodeHighlight) {
-                        editormd.loadScript(loadPath + "prettify.min", function() {
-                            loadFlowChartOrSequenceDiagram();
-                        });
-                    } 
-                    else
-                    {                  
-                        loadFlowChartOrSequenceDiagram();
+                        eMd.loadScript(loadPath + "prettify.min", function () {
+                            loadFlowChartOrSequenceDiagram()
+                        })
+                    } else {
+                        loadFlowChartOrSequenceDiagram()
                     }
                 })
-                
             })
-            
         })
-        
     })
 
     return this
@@ -176,4 +165,48 @@ export const loadCSS = function (fileName, callback, into) {
     } else {
         document.body.appendChild(css)
     }
+}
+
+/**
+ * 加载队列完成之后的显示处理
+ * Display handle of the module queues loaded after.
+ *
+ * @param   {Boolean}   recreate   是否为重建编辑器
+ * @returns {editormd}             返回editormd的实例对象
+ */
+
+export const loadedDisplay = function (recreate) {
+    console.log(`==== load display`)
+    recreate             = recreate || false
+
+    var _this            = this;
+    var editor           = this.editor;
+    var preview          = this.preview;
+    var settings         = this.settings;
+
+    this.containerMask.hide();
+    this.save();
+
+    if (settings.watch) {
+        preview.show();
+    }
+
+    editor.data("oldWidth", editor.width()).data("oldHeight", editor.height()); // 为了兼容Zepto
+
+    this.resize();
+    this.registerKeyMaps();
+
+    $(window).resize(function () {
+        _this.resize();
+    });
+
+    this.bindScrollEvent().bindChangeEvent();
+
+    if (!recreate) {
+        $.proxy(settings.onload, this)();
+    }
+
+    this.state.loaded = true;
+
+    return this;
 }
