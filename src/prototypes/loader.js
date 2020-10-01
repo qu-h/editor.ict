@@ -176,7 +176,6 @@ export const loadCSS = function (fileName, callback, into) {
  */
 
 export const loadedDisplay = function (recreate) {
-    console.log(`==== load display`)
     recreate             = recreate || false
 
     var _this            = this;

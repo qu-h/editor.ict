@@ -115,9 +115,9 @@ export const setToolbar = function () {
         return this
     }
 
-    var editor      = this.editor
+    var editor      = editormd.editor
     var preview     = this.preview
-    var classPrefix = this.classPrefix
+    var classPrefix = editormd.classPrefix
 
     var toolbar     = this.toolbar = editor.children("." + classPrefix + "toolbar")
 

@@ -267,6 +267,7 @@ const toolbarModes = {
 
 module.exports = {
     classPrefix,
+    titleDefault,
     settingDefault,
     toolbarModes
 }
