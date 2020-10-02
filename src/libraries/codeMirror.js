@@ -39,11 +39,7 @@ const setCodeMirror = function () {
         indentUnit                : settings.indentUnit,
         lineNumbers               : settings.lineNumbers,
         lineWrapping              : settings.lineWrapping,
-        extraKeys                 : {
-                                        "Ctrl-Q": function (cm) {
-                                            cm.foldCode(cm.getCursor());
-                                        }
-                                    },
+        extraKeys                 : { "Ctrl-Q": function (cm) { cm.foldCode(cm.getCursor()); } },
         foldGutter                : settings.codeFold,
         gutters                   : ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
         matchBrackets             : settings.matchBrackets,
@@ -52,14 +48,13 @@ const setCodeMirror = function () {
         styleSelectedText         : settings.styleSelectedText,
         autoCloseBrackets         : settings.autoCloseBrackets,
         showTrailingSpace         : settings.showTrailingSpace,
-        highlightSelectionMatches : ( (!settings.matchWordHighlight) ? false : { showToken: (settings.matchWordHighlight === "onselected") ? false : /\w/ } )
+        highlightSelectionMatches : ((!settings.matchWordHighlight) ? false : { showToken: (settings.matchWordHighlight === "onselected") ? false : /\w/ })
     };
 
-    this.codeEditor = this.cm        = editormd.$CodeMirror.fromTextArea(this.markdownTextarea[0], codeMirrorConfig);
+    this.codeEditor = this.cm        = editormd.$CodeMirror.fromTextArea(this.markdownTextarea, codeMirrorConfig);
     this.codeMirror = this.cmElement = editor.children(".CodeMirror");
-    
-    if (settings.value !== "")
-    {
+
+    if (settings.value !== "") {
         this.cm.setValue(settings.value);
     }
 
@@ -67,15 +62,13 @@ const setCodeMirror = function () {
         fontSize : settings.fontSize,
         width    : (!settings.watch) ? "100%" : "50%"
     });
-    
-    if (settings.autoHeight)
-    {
+
+    if (settings.autoHeight) {
         this.codeMirror.css("height", "auto");
         this.cm.setOption("viewportMargin", Infinity);
     }
-    
-    if (!settings.lineNumbers)
-    {
+
+    if (!settings.lineNumbers) {
         this.codeMirror.find(".CodeMirror-gutters").css("border-right", "none");
     }
 

@@ -5,7 +5,7 @@ const classPrefix = 'editormd-';
 const titleDefault = 'Editor.md';
 
 const settingDefault = {
-    mode                 : "gfm",          //gfm or markdown
+    mode                 : "gfm",          // gfm or markdown
     name                 : "",             // Form element name
     value                : "",             // value for CodeMirror, if mode not gfm/markdown
     theme                : "",             // Editor.md self themes, before v1.5.0 is CodeMirror theme, default empty
@@ -48,60 +48,63 @@ const settingDefault = {
     fontSize             : "13px",
     saveHTMLToTextarea   : false,
     disabledKeyMaps      : [],
-    
-    onload               : function() {},
-    onresize             : function() {},
-    onchange             : function() {},
+
+    onload               : function () {},
+    onresize             : function () {},
+    onchange             : function () {},
     onwatch              : null,
     onunwatch            : null,
-    onpreviewing         : function() {},
-    onpreviewed          : function() {},
-    onfullscreen         : function() {},
-    onfullscreenExit     : function() {},
-    onscroll             : function() {},
-    onpreviewscroll      : function() {},
-    
+    onpreviewing         : function () {},
+    onpreviewed          : function () {},
+    onfullscreen         : function () {},
+    onfullscreenExit     : function () {},
+    onscroll             : function () {},
+    onpreviewscroll      : function () {},
+
     imageUpload          : false,
     imageFormats         : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
     imageUploadURL       : "",
     crossDomainUpload    : false,
     uploadCallbackURL    : "",
-    
+
     toc                  : true,           // Table of contents
     tocm                 : false,           // Using [TOCM], auto create ToC dropdown menu
     tocTitle             : "",             // for ToC dropdown menu btn
     tocDropdown          : false,
     tocContainer         : "",
     tocStartLevel        : 1,              // Said from H1 to create ToC
-    htmlDecode           : false,          // Open the HTML tag identification 
+    htmlDecode           : false,          // Open the HTML tag identification
     pageBreak            : true,           // Enable parse page break [========]
     atLink               : true,           // for @link
     emailLink            : true,           // for email address auto link
     taskList             : false,          // Enable Github Flavored Markdown task lists
-    emoji                : false,          // :emoji: , Support Github emoji, Twitter Emoji (Twemoji);
-                                           // Support FontAwesome icon emoji :fa-xxx: > Using fontAwesome icon web fonts;
-                                           // Support Editor.md logo icon emoji :editormd-logo: :editormd-logo-1x: > 1~8x;
+    emoji                : false,
+    /**
+     * :emoji: , Support Github emoji, Twitter Emoji (Twemoji);
+     * Support FontAwesome icon emoji :fa-xxx: > Using fontAwesome icon web fonts;
+     * Support Editor.md logo icon emoji :editormd-logo: :editormd-logo-1x: > 1~8x;
+     */
     tex                  : false,          // TeX(LaTeX), based on KaTeX
     flowChart            : false,          // flowChart.js only support IE9+
     sequenceDiagram      : false,          // sequenceDiagram.js only support IE9+
     previewCodeHighlight : true,
-            
+
     toolbar              : true,           // show/hide toolbar
     toolbarAutoFixed     : true,           // on window scroll auto fixed position
     toolbarIcons         : "full",
     toolbarTitles        : {},
     toolbarHandlers      : {
-        ucwords : function() {
-            return editormd.toolbarHandlers.ucwords;
+        ucwords : function () {
+            return this.toolbarHandlers.ucwords;
         },
-        lowercase : function() {
-            return editormd.toolbarHandlers.lowercase;
+        lowercase : function () {
+            return this.toolbarHandlers.lowercase;
         }
     },
     toolbarCustomIcons   : {               // using html tag create toolbar icon, unused default <a> tag.
         lowercase        : "<a href=\"javascript:;\" title=\"Lowercase\" unselectable=\"on\"><i class=\"fa\" name=\"lowercase\" style=\"font-size:24px;margin-top: -10px;\">a</i></a>",
-        "ucwords"        : "<a href=\"javascript:;\" title=\"ucwords\" unselectable=\"on\"><i class=\"fa\" name=\"ucwords\" style=\"font-size:20px;margin-top: -3px;\">Aa</i></a>"
-    }, 
+        ucwords          : "<a href=\"javascript:;\" title=\"ucwords\" unselectable=\"on\"><i class=\"fa\" name=\"ucwords\" style=\"font-size:20px;margin-top: -3px;\">Aa</i></a>"
+    },
     toolbarIconsClass    : {
         undo             : "fa-undo",
         redo             : "fa-repeat",
@@ -139,9 +142,9 @@ const settingDefault = {
         clear            : "fa-eraser",
         help             : "fa-question-circle",
         info             : "fa-info-circle"
-    },        
+    },
     toolbarIconTexts     : {},
-    
+
     lang : {
         name        : "zh-cn",
         description : "开源在线Markdown编辑器<br/>Open source online Markdown editor.",
@@ -219,11 +222,11 @@ const settingDefault = {
                 formatNotAllowed : "错误：只允许上传图片文件，允许上传的图片文件格式有："
             },
             preformattedText : {
-                title             : "添加预格式文本或代码块", 
+                title             : "添加预格式文本或代码块",
                 emptyAlert        : "错误：请填写预格式文本或代码的内容。"
             },
             codeBlock : {
-                title             : "添加代码块",                    
+                title             : "添加代码块",
                 selectLabel       : "代码语言：",
                 selectDefaultText : "请选择代码语言",
                 otherLanguage     : "其他语言",
@@ -242,18 +245,18 @@ const settingDefault = {
 
 const toolbarModes = {
     full : [
-        "undo", "redo", "|", 
-        "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|", 
-        "h1", "h2", "h3", "h4", "h5", "h6", "|", 
+        "undo", "redo", "|",
+        "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|",
+        "h1", "h2", "h3", "h4", "h5", "h6", "|",
         "list-ul", "list-ol", "hr", "|",
         "link", "reference-link", "image", "code", "preformatted-text", "code-block", "table", "datetime", "emoji", "html-entities", "pagebreak", "|",
         "goto-line", "watch", "preview", "fullscreen", "clear", "search", "|",
         "help", "info"
     ],
     simple : [
-        "undo", "redo", "|", 
-        "bold", "del", "italic", "quote", "uppercase", "lowercase", "|", 
-        "h1", "h2", "h3", "h4", "h5", "h6", "|", 
+        "undo", "redo", "|",
+        "bold", "del", "italic", "quote", "uppercase", "lowercase", "|",
+        "h1", "h2", "h3", "h4", "h5", "h6", "|",
         "list-ul", "list-ol", "hr", "|",
         "watch", "preview", "fullscreen", "|",
         "help", "info"

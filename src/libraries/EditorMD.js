@@ -33,7 +33,7 @@ import { previewCodeHighlight } from '../properties/CodeHighlight'
 import { markdownToCRenderer } from '../properties/TableOfContent'
 import { resize, height, width } from '../properties/dimension'
 import { addKeyMap, removeKeyMap, registerKeyMaps } from '../properties/KeyMap'
-import { hideEvent, show, off, on, bindChangeEvent, bindScrollEvent, recreateEvent} from '../properties/events'
+import { hideEvent, show, off, on, bindChangeEvent, bindScrollEvent, recreateEvent } from '../properties/events'
 
 class EditorMD {
     constructor (id, options) {
@@ -41,6 +41,9 @@ class EditorMD {
         this.init(id, options)
     }
 
+    /**
+     * Initial class value
+     */
     initValue () {
         this.state = {
             watching: false,
@@ -94,11 +97,14 @@ class EditorMD {
 
     init (id, options) {
         options = options || {}
+        const editormd = this;
+
         if (typeof id === 'object') {
             options = id
         }
-        // var classPrefix      = classPrefix;
-        const settings = $.extend(true, {}, settingDefault, options);
+
+        const settings = $.extend(true, {}, settingDefault, options)
+        this.settings = settings
 
         if (options.imageFormats) {
             settings.imageFormats = options.imageFormats;
@@ -109,18 +115,21 @@ class EditorMD {
         }
 
         let editor
+
         if (id instanceof HTMLElement) {
             const element = id;
             editor = this.editor = $(element);
             id = element.id.length > 0 ? element.id : settings.id;
         } else {
             id               = (typeof id === "object") ? settings.id : id;
-            editor           = this.editor       = $("#" + id);
+            // editor           = this.editor       = $("#" + id);
+            editor = document.getElementById(id)
         }
         this.id              = id;
         this.lang            = settings.lang;
+        this.editor = editor
 
-        var classNames       = this.classNames   = {
+        this.classNames   = {
             textarea : {
                 html     : `${classPrefix}html-textarea`,
                 markdown : `${classPrefix}markdown-textarea`
@@ -130,63 +139,88 @@ class EditorMD {
         settings.pluginPath = (settings.pluginPath === '') ? settings.path + '../plugins/' : settings.pluginPath
         this.state.watching = settings.watch
 
-        if (!editor.hasClass("editormd")) {
-            editor.addClass("editormd");
+        if (editor.classList.contains("editormd") !== true) {
+            editor.classList.add("editormd");
         }
 
-        editor.css({
-            width  : (typeof settings.width  === "number") ? settings.width  + "px" : settings.width,
-            height : (typeof settings.height === "number") ? settings.height + "px" : settings.height
-        });
+        editor.style.width = (typeof settings.width  === "number") ? settings.width  + "px" : settings.width;
+        editor.style.height = (typeof settings.height  === "number") ? settings.height  + "px" : settings.height;
 
         if (settings.autoHeight) {
-            editor.css("height", "auto");
+            editor.style.height = `auto`;
         }
 
-        var markdownTextarea = this.markdownTextarea = editor.children("textarea");
+        // var markdownTextarea = this.markdownTextarea = editor.children("textarea");
+        var markdownTextarea = this.markdownTextarea = editor.querySelector('textarea');
 
         if (markdownTextarea.length < 1) {
             editor.append("<textarea></textarea>");
             markdownTextarea = this.markdownTextarea = editor.children("textarea");
         }
 
-        markdownTextarea.addClass(classNames.textarea.markdown).attr("placeholder", settings.placeholder);
+        markdownTextarea.classList.add(this.classNames.textarea.markdown)
+        markdownTextarea.placeholder = settings.placeholder
+        // markdownTextarea.addClass(this.classNames.textarea.markdown).attr("placeholder", settings.placeholder);
 
-        if (typeof markdownTextarea.attr("name") === "undefined" || markdownTextarea.attr("name") === "") {
-            markdownTextarea.attr("name", (settings.name !== "") ? settings.name : id + "-markdown-doc");
+        if (typeof markdownTextarea.name === "undefined" || markdownTextarea.name === "") {
+            // markdownTextarea.attr("name", (settings.name !== "") ? settings.name : id + "-markdown-doc");
+            markdownTextarea.name = (settings.name !== "") ? settings.name : id + "-markdown-doc"
         }
+
+        if (settings.markdown !== "") {
+            markdownTextarea.value = settings.markdown
+        }
+
+        if (settings.appendMarkdown !== "") {
+            markdownTextarea.value += settings.appendMarkdown
+        }
+
+       
 
         var appendElements = [
             (!settings.readOnly) ? "<a href=\"javascript:;\" class=\"fa fa-close " + classPrefix + "preview-close-btn\"></a>" : "",
-            ( (settings.saveHTMLToTextarea) ? "<textarea class=\"" + classNames.textarea.html + "\" name=\"" + id + "-html-code\"></textarea>" : "" ),
+
+            (settings.saveHTMLToTextarea) ? "<textarea class=\"" + this.classNames.textarea.html + "\" name=\"" + id + "-html-code\"></textarea>" : "",
+
             "<div class=\"" + classPrefix + "preview\"><div class=\"markdown-body " + classPrefix + "preview-container\"></div></div>",
             "<div class=\"" + classPrefix + "container-mask\" style=\"display:block;\"></div>",
             "<div class=\"" + classPrefix + "mask\"></div>"
         ].join("\n");
 
-        editor.append(appendElements).addClass(classPrefix + "vertical");
+        if (!settings.readOnly) {
+            const closeBtn = document.createElement("A");
+            closeBtn.classList.add(`fa`, `fa-close`, `${classPrefix}preview-close-btn`)
+            closeBtn.href = 'javascript:'
+            editor.appendChild(closeBtn);
+        }
+
+        this.setSaveHtml()
+        this.setPreview()
+
+        editor.classList.add(`${classPrefix}vertical`)
+
+        // editor.append(appendElements)
+        //     .addClass(classPrefix + "vertical");
 
         if (settings.theme !== "") {
-            editor.addClass(classPrefix + "theme-" + settings.theme);
+            editor.classList.add(`${classPrefix}theme-${settings.theme}`);
+            // editor.addClass(classPrefix + "theme-" + settings.theme);
         }
 
-        this.mask          = editor.children("." + classPrefix + "mask")
-        this.containerMask = editor.children("." + classPrefix  + "container-mask")
+        // this.mask          = editor.children("." + classPrefix + "mask")
+        // this.containerMask = editor.children("." + classPrefix  + "container-mask")
+        // this.htmlTextarea     = editor.children("." + this.classNames.textarea.html)
+        // this.preview          = editor.children("." + classPrefix + "preview")
+        // this.previewContainer = this.preview.children("." + classPrefix + "preview-container");
 
-        if (settings.markdown !== "") {
-            markdownTextarea.val(settings.markdown);
-        }
+        this.mask = editor.getElementsByClassName(`${classPrefix}mask`)
+        this.containerMask = editor.getElementsByClassName(`${classPrefix}container-mask`)
+        this.htmlTextarea     = editor.getElementsByClassName(this.classNames.textarea.html)
 
-        if (settings.appendMarkdown !== "") {
-            markdownTextarea.val(markdownTextarea.val() + settings.appendMarkdown);
-        }
-
-        this.htmlTextarea     = editor.children("." + classNames.textarea.html)
-        this.preview          = editor.children("." + classPrefix + "preview")
-        this.previewContainer = this.preview.children("." + classPrefix + "preview-container");
+        console.log(`===markdownTextarea length:${this.preview.length}`, { markdownTextarea }, this.preview)
 
         if (settings.previewTheme !== "") {
-            this.preview.addClass(classPrefix + "preview-theme-" + settings.previewTheme);
+            this.preview.classList.add(classPrefix + "preview-theme-" + settings.previewTheme);
         }
 
         if (typeof define === "function" && define.amd) {
@@ -200,13 +234,13 @@ class EditorMD {
             }
         }
 
-        editormd.settings = settings
-        this.settings = settings
+        // editormd.settings = settings
+        // this.settings = settings
 
         if (
             (typeof define === "function" && define.amd) ||
-            !settings.autoLoadModules)
-        {
+            !settings.autoLoadModules
+        ) {
             if (typeof window.CodeMirror !== "undefined") {
                 editormd.$CodeMirror = window.CodeMirror;
             }
@@ -223,6 +257,25 @@ class EditorMD {
         // editorTheme.call(this);
 
         return this
+    }
+
+    setPreview () {
+        this.previewContainer = document.createElement("div")
+        this.previewContainer.classList.add(`markdown-body`, `${classPrefix}preview-container`)
+
+        this.preview          = document.createElement("div")
+        this.preview.classList.add(`${classPrefix}preview`)
+        this.preview.appendChild(this.previewContainer)
+        this.editor.appendChild(this.preview);
+    }
+
+    setSaveHtml () {
+        if (this.settings.saveHTMLToTextarea) {
+            const htmlSaving = document.createElement("textarea")
+            htmlSaving.classList.add(this.classNames.textarea.html)
+            htmlSaving.name = `${this.id}-html-code`
+            this.editor.appendChild(htmlSaving);
+        }
     }
 }
 
