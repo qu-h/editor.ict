@@ -55,7 +55,8 @@
     "bench": "npm run rollup && node test/bench.js",
     "lint": "eslint --fix bin/marked .",
     "build:reset": "git checkout upstream/master lib/marked.js lib/marked.esm.js marked.min.js",
-    "dev": "npm run rollup:umd",
+    "watch": "npm-watch",
+    "dev": "rollup -c rollup.config.js",
     "build": "npm run rollup && npm run minify",
     "build:docs": "node build-docs.js",
     "rollup": "npm run rollup:umd && npm run rollup:esm",
@@ -64,7 +65,18 @@
     "minify": "uglifyjs lib/marked.js -cm  --comments /Copyright/ -o marked.min.js",
     "preversion": "npm run build && (git diff --quiet || git commit -am build)"
   },
+  "watch": {
+    "dev": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "js"
+    }
+  },
   "engines": {
     "node": ">= 8.16.2"
+  },
+  "dependencies": {
+    "npm-watch": "^0.7.0"
   }
 }
