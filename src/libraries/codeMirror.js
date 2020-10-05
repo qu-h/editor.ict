@@ -18,8 +18,7 @@ const setCodeMirrorTheme = function (theme) {
  */
 
 const setCodeMirror = function () {
-    var settings = this.settings
-    var editor = this.editor
+    const { editor, settings } = this
     const editormd = this
 
     // console.log(`================`, { editormd, settings })
@@ -52,16 +51,19 @@ const setCodeMirror = function () {
     };
 
     this.codeEditor = this.cm        = editormd.$CodeMirror.fromTextArea(this.markdownTextarea, codeMirrorConfig);
-    this.codeMirror = this.cmElement = editor.children(".CodeMirror");
+    this.codeMirror = editor.getElementsByClassName("CodeMirror")[0];
 
     if (settings.value !== "") {
         this.cm.setValue(settings.value);
     }
 
-    this.codeMirror.css({
-        fontSize : settings.fontSize,
-        width    : (!settings.watch) ? "100%" : "50%"
-    });
+    // this.codeMirror.css({
+    //     fontSize : settings.fontSize,
+    //     width    : (!settings.watch) ? "100%" : "50%"
+    // });
+
+    this.codeMirror.style.fontSize = settings.fontSize
+    this.codeMirror.style.width = (!settings.watch) ? "100%" : "50%"
 
     if (settings.autoHeight) {
         this.codeMirror.css("height", "auto");
@@ -72,6 +74,7 @@ const setCodeMirror = function () {
         this.codeMirror.find(".CodeMirror-gutters").css("border-right", "none");
     }
 
+    this.cmElement = this.codeMirror;
     return this
 }
 

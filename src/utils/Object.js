@@ -8,3 +8,10 @@ const ObjectUltil = {
 }
 
 export default ObjectUltil
+
+export function clone (obj) {
+    return Object.create(
+        Object.getPrototypeOf(obj),
+        Object.getOwnPropertyDescriptors(obj)
+    );
+}

@@ -69,8 +69,10 @@ export function editorSave () {
     if (settings.watch || (!settings.watch && state.preview)) {
         previewContainer.html(newMarkdownDoc);
 
-        previewContainer.find(".task-list-item").each(function () {
-            $(this).parent().addClass("task-list");
+        previewContainer.find(".task-list-item").forEach(function (elm) {
+            // @TODO : refactoring
+            elm.parentNode.classList.add('task-list');
+            // $(elm).parent().addClass("task-list");
         });
 
         this.previewCodeHighlight();

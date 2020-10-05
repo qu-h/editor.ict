@@ -15,14 +15,7 @@ import {
     setCodeMirrorOption
 } from '../libraries/codeMirror'
 
-import {
-    showToolbar,
-    hideToolbar,
-    setToolbarAutoFixed,
-    setToolbar,
-    getToolbarHandles,
-    setToolbarHandler
-} from '../prototypes/toolbar'
+import { editorToolbar } from '../prototypes/toolbar'
 
 import { mouseOrTouch } from '../events/mouse'
 import { editorSave } from '../properties/EditorSave'
@@ -34,11 +27,41 @@ import { markdownToCRenderer } from '../properties/TableOfContent'
 import { resize, height, width } from '../properties/dimension'
 import { addKeyMap, removeKeyMap, registerKeyMaps } from '../properties/KeyMap'
 import { hideEvent, show, off, on, bindChangeEvent, bindScrollEvent, recreateEvent } from '../properties/events'
+import { editorInitial } from '../properties/EditorInitial';
 
 class EditorMD {
     constructor (id, options) {
         this.initValue()
+        this.initCloneMethod()
         this.init(id, options)
+    }
+
+    doCloneMethod (object) {
+        var classScope = this;
+        // Get the prototype of your class. This will create an object that has one key for every method in your class. I'm not sure if this will go up the prototype chain if you have subclasses. Someone ought to edit this answer to clarify that.
+        // var methods =  object.__proto__;
+
+        // console.log(`===== `,{object, methods})
+        // Iterate the properties of your class--all the internal key-value pairs that do get duplicated in RAM each time you instantiate the class.
+        Object.keys(object).forEach(iterate);
+
+        function iterate (method) {
+            // Add each property to your clone
+            classScope[method] = object[method];
+        }
+        // // Return the clone
+        // return miniMe;
+    }
+
+    initCloneMethod () {
+        this.initEditor = editorInitial.initEditor
+        this.initButtonClose = editorInitial.initButtonClose
+        this.initPreview = editorInitial.initPreview
+        this.initSaveHtml = editorInitial.initSaveHtml
+        this.initMarkdownTextarea = editorInitial.initMarkdownTextarea
+        this.initMask = editorInitial.initMask
+
+        this.doCloneMethod(editorToolbar)
     }
 
     /**
@@ -105,6 +128,7 @@ class EditorMD {
 
         const settings = $.extend(true, {}, settingDefault, options)
         this.settings = settings
+        this.lang            = settings.lang;
 
         if (options.imageFormats) {
             settings.imageFormats = options.imageFormats;
@@ -114,98 +138,27 @@ class EditorMD {
             settings.emojiCategories = options.emojiCategories;
         }
 
-        let editor
-
-        if (id instanceof HTMLElement) {
-            const element = id;
-            editor = this.editor = $(element);
-            id = element.id.length > 0 ? element.id : settings.id;
-        } else {
-            id               = (typeof id === "object") ? settings.id : id;
-            // editor           = this.editor       = $("#" + id);
-            editor = document.getElementById(id)
-        }
-        this.id              = id;
-        this.lang            = settings.lang;
-        this.editor = editor
-
-        this.classNames   = {
-            textarea : {
-                html     : `${classPrefix}html-textarea`,
-                markdown : `${classPrefix}markdown-textarea`
-            }
-        };
-
         settings.pluginPath = (settings.pluginPath === '') ? settings.path + '../plugins/' : settings.pluginPath
         this.state.watching = settings.watch
 
-        if (editor.classList.contains("editormd") !== true) {
-            editor.classList.add("editormd");
-        }
+        this.initEditor(id)
+        this.initMarkdownTextarea()
 
-        editor.style.width = (typeof settings.width  === "number") ? settings.width  + "px" : settings.width;
-        editor.style.height = (typeof settings.height  === "number") ? settings.height  + "px" : settings.height;
+        // var appendElements = [
+        //     // (!settings.readOnly) ? "<a href=\"javascript:;\" class=\"fa fa-close " + classPrefix + "preview-close-btn\"></a>" : "",
 
-        if (settings.autoHeight) {
-            editor.style.height = `auto`;
-        }
+        //     // (settings.saveHTMLToTextarea) ? "<textarea class=\"" + this.classNames.textarea.html + "\" name=\"" + id + "-html-code\"></textarea>" : "",
 
-        // var markdownTextarea = this.markdownTextarea = editor.children("textarea");
-        var markdownTextarea = this.markdownTextarea = editor.querySelector('textarea');
+        //     // "<div class=\"" + classPrefix + "preview\"><div class=\"markdown-body " + classPrefix + "preview-container\"></div></div>",
+        //     "<div class=\"" + classPrefix + "container-mask\" style=\"display:block;\"></div>",
+        //     "<div class=\"" + classPrefix + "mask\"></div>"
+        // ].join("\n");
 
-        if (markdownTextarea.length < 1) {
-            editor.append("<textarea></textarea>");
-            markdownTextarea = this.markdownTextarea = editor.children("textarea");
-        }
+        this.initButtonClose()
 
-        markdownTextarea.classList.add(this.classNames.textarea.markdown)
-        markdownTextarea.placeholder = settings.placeholder
-        // markdownTextarea.addClass(this.classNames.textarea.markdown).attr("placeholder", settings.placeholder);
-
-        if (typeof markdownTextarea.name === "undefined" || markdownTextarea.name === "") {
-            // markdownTextarea.attr("name", (settings.name !== "") ? settings.name : id + "-markdown-doc");
-            markdownTextarea.name = (settings.name !== "") ? settings.name : id + "-markdown-doc"
-        }
-
-        if (settings.markdown !== "") {
-            markdownTextarea.value = settings.markdown
-        }
-
-        if (settings.appendMarkdown !== "") {
-            markdownTextarea.value += settings.appendMarkdown
-        }
-
-       
-
-        var appendElements = [
-            (!settings.readOnly) ? "<a href=\"javascript:;\" class=\"fa fa-close " + classPrefix + "preview-close-btn\"></a>" : "",
-
-            (settings.saveHTMLToTextarea) ? "<textarea class=\"" + this.classNames.textarea.html + "\" name=\"" + id + "-html-code\"></textarea>" : "",
-
-            "<div class=\"" + classPrefix + "preview\"><div class=\"markdown-body " + classPrefix + "preview-container\"></div></div>",
-            "<div class=\"" + classPrefix + "container-mask\" style=\"display:block;\"></div>",
-            "<div class=\"" + classPrefix + "mask\"></div>"
-        ].join("\n");
-
-        if (!settings.readOnly) {
-            const closeBtn = document.createElement("A");
-            closeBtn.classList.add(`fa`, `fa-close`, `${classPrefix}preview-close-btn`)
-            closeBtn.href = 'javascript:'
-            editor.appendChild(closeBtn);
-        }
-
-        this.setSaveHtml()
-        this.setPreview()
-
-        editor.classList.add(`${classPrefix}vertical`)
-
-        // editor.append(appendElements)
-        //     .addClass(classPrefix + "vertical");
-
-        if (settings.theme !== "") {
-            editor.classList.add(`${classPrefix}theme-${settings.theme}`);
-            // editor.addClass(classPrefix + "theme-" + settings.theme);
-        }
+        this.initSaveHtml()
+        this.initPreview()
+        this.initMask()
 
         // this.mask          = editor.children("." + classPrefix + "mask")
         // this.containerMask = editor.children("." + classPrefix  + "container-mask")
@@ -213,15 +166,9 @@ class EditorMD {
         // this.preview          = editor.children("." + classPrefix + "preview")
         // this.previewContainer = this.preview.children("." + classPrefix + "preview-container");
 
-        this.mask = editor.getElementsByClassName(`${classPrefix}mask`)
-        this.containerMask = editor.getElementsByClassName(`${classPrefix}container-mask`)
-        this.htmlTextarea     = editor.getElementsByClassName(this.classNames.textarea.html)
-
-        console.log(`===markdownTextarea length:${this.preview.length}`, { markdownTextarea }, this.preview)
-
-        if (settings.previewTheme !== "") {
-            this.preview.classList.add(classPrefix + "preview-theme-" + settings.previewTheme);
-        }
+        // this.mask = editor.getElementsByClassName(`${classPrefix}mask`)
+        // this.containerMask = editor.getElementsByClassName(`${classPrefix}container-mask`)
+        // this.htmlTextarea     = editor.getElementsByClassName(this.classNames.textarea.html)
 
         if (typeof define === "function" && define.amd) {
             if (typeof window.katex !== "undefined") {
@@ -258,33 +205,17 @@ class EditorMD {
 
         return this
     }
-
-    setPreview () {
-        this.previewContainer = document.createElement("div")
-        this.previewContainer.classList.add(`markdown-body`, `${classPrefix}preview-container`)
-
-        this.preview          = document.createElement("div")
-        this.preview.classList.add(`${classPrefix}preview`)
-        this.preview.appendChild(this.previewContainer)
-        this.editor.appendChild(this.preview);
-    }
-
-    setSaveHtml () {
-        if (this.settings.saveHTMLToTextarea) {
-            const htmlSaving = document.createElement("textarea")
-            htmlSaving.classList.add(this.classNames.textarea.html)
-            htmlSaving.name = `${this.id}-html-code`
-            this.editor.appendChild(htmlSaving);
-        }
-    }
 }
 
-EditorMD.showToolbar = showToolbar
-EditorMD.prototype.hideToolbar = hideToolbar
-EditorMD.prototype.setToolbarAutoFixed = setToolbarAutoFixed
-EditorMD.prototype.setToolbar = setToolbar
-EditorMD.prototype.getToolbarHandles = getToolbarHandles
-EditorMD.prototype.setToolbarHandler = setToolbarHandler
+// const editorToolbar = new EditorToolbar();
+// Object.setPrototypeOf(EditorMD, editorToolbar.prototype);
+
+// EditorMD.showToolbar = EditorToolbar.showToolbar
+// EditorMD.prototype.hideToolbar = EditorToolbar.hideToolbar
+// EditorMD.prototype.setToolbarAutoFixed = EditorToolbar.setToolbarAutoFixed
+// EditorMD.prototype.setToolbar = EditorToolbar.setToolbar
+// EditorMD.prototype.getToolbarHandles = getToolbarHandles
+// EditorMD.prototype.setToolbarHandler = setToolbarHandler
 
 EditorMD.prototype.loadQueues = loadQueues
 EditorMD.prototype.loadCSS = loadCSS
@@ -296,4 +227,5 @@ EditorMD.prototype.getCodeMirrorOption = getCodeMirrorOption
 EditorMD.prototype.setCodeMirrorOption = setCodeMirrorOption
 
 EditorMD.prototype.trim = trimText;
+
 export default EditorMD

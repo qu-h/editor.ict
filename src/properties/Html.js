@@ -20,13 +20,10 @@ export function filterHTMLTags (html, filters) {
     var filterTags = expression[0].split(",");
     var attrs      = expression[1];
 
-    for (var i = 0, len = filterTags.length; i < len; i++)
-    {
+    for (var i = 0, len = filterTags.length; i < len; i++) {
         var tag = filterTags[i];
-
         html = html.replace(new RegExp("\<\s*" + tag + "\s*([^\>]*)\>([^\>]*)\<\s*\/" + tag + "\s*\>", "igm"), "");
     }
-    
     //return html;
 
     if (typeof attrs !== "undefined")

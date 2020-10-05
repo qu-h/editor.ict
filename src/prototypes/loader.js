@@ -1,3 +1,4 @@
+import {} from '../utils/HtmlElementPrototype'
 /**
  * 所需组件加载队列
  * Required components loading queue
@@ -183,6 +184,8 @@ export const loadedDisplay = function (recreate) {
     var preview          = this.preview;
     var settings         = this.settings;
 
+    let a = this.containerMask;
+    console.log(`======`, {a})
     this.containerMask.hide();
     this.save();
 

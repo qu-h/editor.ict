@@ -10,7 +10,9 @@ export function previewCodeHighlight () {
     var previewContainer = this.previewContainer;
 
     if (settings.previewCodeHighlight) {
-        previewContainer.find("pre").addClass("prettyprint linenums");
+        previewContainer.find("pre").forEach(element => {
+            element.addClass("prettyprint linenums")
+        })
 
         if (typeof prettyPrint !== "undefined") {
             prettyPrint();
