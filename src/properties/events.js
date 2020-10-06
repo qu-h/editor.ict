@@ -1,5 +1,6 @@
 
 import { runProxy } from '../utils/Object'
+import {}  from '../utils/HtmlElementPrototype'
 
 /**
  * 注册事件处理方法
@@ -14,7 +15,7 @@ export function on (eventType, callback) {
     var settings = this.settings;
 
     if (typeof settings["on" + eventType] !== "undefined") {
-        settings["on" + eventType] = $.proxy(callback, this)
+        settings["on" + eventType] = runProxy(callback, this)
     }
 
     return this;
@@ -30,12 +31,11 @@ export function on (eventType, callback) {
 
 export function off (eventType) {
     var settings = this.settings;
-    
-    if (typeof settings["on" + eventType] !== "undefined") 
-    {
-        settings["on" + eventType] = function(){};
+
+    if (typeof settings["on" + eventType] !== "undefined") {
+        settings["on" + eventType] = function () {};
     }
-    
+
     return this;
 }
 
@@ -88,50 +88,55 @@ export function bindScrollEvent () {
     }
 
     var cmBindScroll = function () {
-        codeMirror.find(".CodeMirror-scroll").bind(mouseOrTouch("scroll", "touchmove"), function (event) {
+        const codeMirrorScroll = codeMirror.querySelector('.CodeMirror-scroll')
+        codeMirrorScroll.bind(mouseOrTouch("scroll", "touchmove"), function (event) {
             const elm = this;
-            const  { height, scrollTop } = elm
+            const  { scrollTop } = elm
+            const height = elm.height()
             var percent   = (scrollTop / elm.scrollHeight);
             var tocHeight = 0;
 
-            preview.find(".markdown-toc-list").each(function () {
+            preview.querySelectorAll(".markdown-toc-list").each(function () {
                 tocHeight += height;
             });
 
-            var tocMenuHeight = preview.find(".editormd-toc-menu").height();
-            tocMenuHeight = (!tocMenuHeight) ? 0 : tocMenuHeight;
+            const tocMenu = preview.querySelector(".editormd-toc-menu");
+            let tocMenuHeight = 0
+            if (tocMenu) {
+                tocMenuHeight = tocMenu.height();
+                tocMenuHeight = (!tocMenuHeight) ? 0 : tocMenuHeight;
+            }
 
             if (scrollTop === 0) {
                 preview.scrollTop(0);
             } else if (scrollTop + height >= elm.scrollHeight - 16) {
-                preview.scrollTop(preview[0].scrollHeight);
+                preview.scrollTop = preview.scrollHeight;
             }  else {
-                preview.scrollTop((preview[0].scrollHeight  + tocHeight + tocMenuHeight) * percent);
+                preview.scrollTop = (preview.scrollHeight  + tocHeight + tocMenuHeight) * percent;
             }
 
             runProxy(settings.onscroll, _this, event)(event)
-            // $.proxy(settings.onscroll, _this)(event);
         });
     };
 
     var cmUnbindScroll = function () {
-        codeMirror.find(".CodeMirror-scroll").unbind(mouseOrTouch("scroll", "touchmove"));
+        codeMirror.querySelector('.CodeMirror-scroll').unbind(mouseOrTouch("scroll", "touchmove"));
     };
 
     var previewBindScroll = function () {
         preview.bind(mouseOrTouch("scroll", "touchmove"), function (event) {
             const elm = this;
-            const  { height, scrollTop } = elm
-
+            const  { scrollTop } = elm
+            const height = elm.height()
             var percent   = (scrollTop / elm.scrollHeight);
             var codeView  = codeMirror.find(".CodeMirror-scroll");
 
             if (scrollTop === 0) {
                 codeView.scrollTop(0);
             } else if (scrollTop + height >= elm.scrollHeight) {
-                codeView.scrollTop(codeView[0].scrollHeight)
+                codeView.scrollTop = codeView.scrollHeight
             } else {
-                codeView.scrollTop(codeView[0].scrollHeight * percent);
+                codeView.scrollTop = codeView.scrollHeight * percent;
             }
 
             runProxy(settings.onpreviewscroll, _this)(event);

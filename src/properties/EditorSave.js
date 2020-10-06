@@ -1,3 +1,4 @@
+import { $ } from '../utils/jQuery'
 /**
  * Parse & Saving Markdown source code
  *
@@ -38,7 +39,7 @@ export function editorSave () {
         emailLink            : settings.emailLink,        // for mail address auto link
         flowChart            : settings.flowChart,
         sequenceDiagram      : settings.sequenceDiagram,
-        previewCodeHighlight : settings.previewCodeHighlight,
+        previewCodeHighlight : settings.previewCodeHighlight
     };
 
     var markedOptions = this.markedOptions = {
@@ -78,10 +79,12 @@ export function editorSave () {
         this.previewCodeHighlight();
 
         if (settings.toc) {
-            var tocContainer = (settings.tocContainer === "") ? previewContainer : $(settings.tocContainer);
+            var tocContainer = (settings.tocContainer === "") ? previewContainer : editormd.preview.querySelector(settings.tocContainer);
+
             var tocMenu      = tocContainer.find("." + this.classPrefix + "toc-menu");
 
-            tocContainer.attr("previewContainer", (settings.tocContainer === "") ? "true" : "false");
+            // tocContainer.attr("previewContainer", (settings.tocContainer === "") ? "true" : "false");
+            tocContainer.setAttribute("previewContainer", (settings.tocContainer === "") ? "true" : "false");
 
             if (settings.tocContainer !== "" && tocMenu.length > 0) {
                 tocMenu.remove();

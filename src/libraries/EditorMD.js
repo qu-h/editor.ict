@@ -7,7 +7,8 @@ import {
 
 import { regexDefault } from '../const/RegExp'
 
-import { loadQueues, loadCSS, loadScript, loadedDisplay } from '../prototypes/loader'
+// import { loadQueues, loadCSS, loadScript, loadedDisplay } from '../prototypes/loader'
+import { editorLoader } from '../prototypes/loader'
 import {
     setCodeMirrorTheme,
     setCodeMirror,
@@ -37,20 +38,14 @@ class EditorMD {
     }
 
     doCloneMethod (object) {
-        var classScope = this;
-        // Get the prototype of your class. This will create an object that has one key for every method in your class. I'm not sure if this will go up the prototype chain if you have subclasses. Someone ought to edit this answer to clarify that.
-        // var methods =  object.__proto__;
-
-        // console.log(`===== `,{object, methods})
-        // Iterate the properties of your class--all the internal key-value pairs that do get duplicated in RAM each time you instantiate the class.
-        Object.keys(object).forEach(iterate);
-
+        const classScope = this;
         function iterate (method) {
-            // Add each property to your clone
             classScope[method] = object[method];
         }
-        // // Return the clone
-        // return miniMe;
+
+        Object.keys(object).forEach(iterate);
+        const methods = Object.getPrototypeOf(object);
+        Object.keys(methods).forEach(iterate);
     }
 
     initCloneMethod () {
@@ -62,6 +57,7 @@ class EditorMD {
         this.initMask = editorInitial.initMask
 
         this.doCloneMethod(editorToolbar)
+        this.doCloneMethod(editorLoader)
     }
 
     /**
@@ -89,7 +85,7 @@ class EditorMD {
 
         this.toolbarModes = toolbarModes
         this.mouseOrTouch = mouseOrTouch
-        this.loadedDisplay = loadedDisplay
+        // this.loadedDisplay = editorLoader.loadedDisplay
         this.save = editorSave
 
         this.regexs = regexDefault;
@@ -217,9 +213,9 @@ class EditorMD {
 // EditorMD.prototype.getToolbarHandles = getToolbarHandles
 // EditorMD.prototype.setToolbarHandler = setToolbarHandler
 
-EditorMD.prototype.loadQueues = loadQueues
-EditorMD.prototype.loadCSS = loadCSS
-EditorMD.prototype.loadScript = loadScript
+// EditorMD.prototype.loadQueues = editorLoader.loadQueues
+// EditorMD.prototype.loadCSS = editorLoader.loadCSS
+// EditorMD.prototype.loadScript = editorLoader.loadScript
 
 EditorMD.prototype.setCodeMirrorTheme = setCodeMirrorTheme
 EditorMD.prototype.setCodeMirror = setCodeMirror

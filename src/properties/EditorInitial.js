@@ -132,7 +132,7 @@ class EditorInitial {
 
         this.mask = document.createElement("div")
         this.mask.classList.add(`${classPrefix}mask`)
-        this.mask.style.display = 'block'
+        // this.mask.style.display = 'block'
         editor.appendChild(this.mask)
     }
 }

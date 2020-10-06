@@ -27,7 +27,8 @@ export function markedRenderer (markdownToC, options) {
     var settings = $.extend(defaults, options || {});
     const editormd = this
     // this.options.imgPath = null;
-
+console.log(`dd load marked`, {editormd})
+console.trace();
     var marked          = editormd.$marked;
     var markedRenderer  = new marked.Renderer();
     markdownToC         = markdownToC || []

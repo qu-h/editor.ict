@@ -47,75 +47,57 @@ export const resize = function (width, height) {
     var preview    = this.preview;
     var toolbar    = this.toolbar;
     var settings   = this.settings;
-    var codeMirror = this.codeMirror;
-    
-    if (width)
-    {
+
+    const { codeMirror } = this;
+
+    if (width) {
         editor.css("width", (typeof width  === "number") ? width  + "px" : width);
     }
-    
-    if (settings.autoHeight && !state.fullscreen && !state.preview)
-    {
+
+    if (settings.autoHeight && !state.fullscreen && !state.preview) {
         editor.css("height", "auto");
         codeMirror.css("height", "auto");
-    } 
-    else 
-    {
-        if (height) 
-        {
+    } else {
+        if (height) {
             editor.css("height", (typeof height === "number") ? height + "px" : height);
         }
-        
-        if (state.fullscreen)
-        {
+
+        if (state.fullscreen) {
             editor.height($(window).height());
         }
 
-        if (settings.toolbar && !settings.readOnly) 
-        {
+        if (settings.toolbar && !settings.readOnly) {
             codeMirror.css("margin-top", toolbar.height() + 1).height(editor.height() - toolbar.height());
-        } 
-        else
-        {
+        } else {
             codeMirror.css("margin-top", 0).height(editor.height());
         }
     }
-    
-    if(settings.watch) 
-    {
+
+    if (settings.watch) {
         codeMirror.width(editor.width() / 2);
         preview.width((!state.preview) ? editor.width() / 2 : editor.width());
-        
+
         this.previewContainer.css("padding", settings.autoHeight ? "20px 20px 50px 40px" : "20px");
-        
-        if (settings.toolbar && !settings.readOnly) 
-        {
+
+        if (settings.toolbar && !settings.readOnly) {
             preview.css("top", toolbar.height() + 1);
-        } 
-        else 
-        {
+        } else {
             preview.css("top", 0);
         }
-        
-        if (settings.autoHeight && !state.fullscreen && !state.preview)
-        {
+
+        if (settings.autoHeight && !state.fullscreen && !state.preview) {
             preview.height("");
-        }
-        else
-        {                
+        } else {
             var previewHeight = (settings.toolbar && !settings.readOnly) ? editor.height() - toolbar.height() : editor.height();
-            
+
             preview.height(previewHeight);
         }
-    } 
-    else 
-    {
+    } else {
         codeMirror.width(editor.width());
         preview.hide();
     }
-    
-    if (state.loaded) 
-    {
+
+    if (state.loaded) {
         $.proxy(settings.onresize, this)();
     }
 

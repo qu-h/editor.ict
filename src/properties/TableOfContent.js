@@ -61,7 +61,7 @@ export function markdownToCRenderer (toc, container, tocDropdown, startLevel, ma
         tocContainer.wrap("<div class=\"" + classPrefix + "toc-menu\"></div><br/>");
     }
 
-    tocContainer.html("<ul class=\"markdown-toc-list\"></ul>").children(".markdown-toc-list").html(html.replace(/\r?\n?\<ul\>\<\/ul\>/g, ""));
+    $(tocContainer).html("<ul class=\"markdown-toc-list\"></ul>").children(".markdown-toc-list").html(html.replace(/\r?\n?\<ul\>\<\/ul\>/g, ""));
     return tocContainer;
 }
 
