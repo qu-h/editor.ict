@@ -24,24 +24,21 @@ export function markedRenderer (markdownToC, options) {
         sequenceDiagram      : false          // sequenceDiagram.js only support IE9+
     };
 
-    var settings = $.extend(defaults, options || {});
+    var settings = { ...defaults, ...options || {} }
+
     const editormd = this
     // this.options.imgPath = null;
-console.log(`dd load marked`, {editormd})
-console.trace();
+
     var marked          = editormd.$marked;
     var markedRenderer  = new marked.Renderer();
     markdownToC         = markdownToC || []
 
     var regexs          = editormd.regexs;
-    var atLinkReg       = regexs.atLink;
-    var emailReg        = regexs.email;
-    var emailLinkReg    = regexs.emailLink;
     var pageBreakReg    = regexs.pageBreak;
 
     markedRenderer.options.imgPath = null;
 
-    markedRenderer.options = $.extend({}, markedRenderer.options, editormd.settings);
+    markedRenderer.options = { ...markedRenderer.options, ...editormd.settings }
 
     const emojiRenderer = new EmojiRenderer({
         faIconReg: regexs.fontAwesome,
@@ -73,7 +70,7 @@ console.trace();
     }
 
     const linkRenderer = new LinkRenderer({ atLinkReg: regexs.atLink, sanitize: this.sanitize });
-    markedRenderer.link = function (href, title, text) { 
+    markedRenderer.link = function (href, title, text) {
         return linkRenderer.execute(href, title, text);
     }
 
@@ -97,7 +94,7 @@ console.trace();
         return text;
     };
 
-    markedRenderer.paragraph = function(text) {
+    markedRenderer.paragraph = function (text) {
         var isTeXInline     = /\$\$(.*)\$\$/g.test(text);
         var isTeXLine       = /^\$\$(.*)\$\$$/.test(text);
         var isTeXAddClass   = (isTeXLine)     ? " class=\"" + editormd.classNames.tex + "\"" : "";
@@ -119,8 +116,7 @@ console.trace();
             var treeViewHTML = "<div class=\"editormd-code-treeview\">" + text + "</div>";
             return treeViewHTML;
         }
-        return (isToC) ? ( (isToCMenu) ? "<div class=\"editormd-toc-menu\">" + tocHTML + "</div><br/>" : tocHTML )
-                       : ( (pageBreakReg.test(text)) ? this.pageBreak(text) : "<p" + isTeXAddClass + ">" + this.atLink(this.emoji(text)) + "</p>\n" );
+        return (isToC) ? ((isToCMenu) ? "<div class=\"editormd-toc-menu\">" + tocHTML + "</div><br/>" : tocHTML) : ((pageBreakReg.test(text)) ? this.pageBreak(text) : "<p" + isTeXAddClass + ">" + this.atLink(this.emoji(text)) + "</p>\n");
     };
 
     const fileExtention = {
@@ -129,30 +125,21 @@ console.trace();
 
     markedRenderer.code = function (code, lang, file) {
         if (typeof marked.Renderer.prototype[lang] === 'undefined' && typeof lang !== 'undefined') {
-            let ext = lang.substring(lang.lastIndexOf("."), lang.length);
-
-            if (fileExtention.hasOwnProperty(ext)) {
+            const ext = lang.substring(lang.lastIndexOf("."), lang.length);
+            if (Object.prototype.hasOwnProperty.call(fileExtention, ext)) {
                 editormd.addCodeTree(lang);
-
-                return this.code(code,fileExtention[ext], lang)
+                return this.code(code, fileExtention[ext], lang)
             }
         }
-        
-        if (lang === "seq" || lang === "sequence")
-        {
+
+        if (lang === "seq" || lang === "sequence") {
             return "<div class=\"sequence-diagram\">" + code + "</div>";
-        } 
-        else if ( lang === "flow")
-        {
+        }  else if (lang === "flow") {
             return "<div class=\"flowchart\">" + code + "</div>";
-        } 
-        else if ( lang === "math" || lang === "latex" || lang === "katex")
-        {
+        } else if (lang === "math" || lang === "latex" || lang === "katex") {
             return "<p class=\"" + editormd.classNames.tex + "\">" + code + "</p>";
-        } 
-        else 
-        {
-            let codePre = marked.Renderer.prototype.code.apply(this, arguments);
+        } else {
+            const codePre = marked.Renderer.prototype.code.apply(this, arguments);
             if (typeof file !== 'undefined') {
                 return `<p class="code-file-path" >${file}</p>` + codePre;
             }
@@ -160,14 +147,14 @@ console.trace();
         }
     };
 
-    markedRenderer.tablecell = function(content, flags) {
+    markedRenderer.tablecell = function (content, flags) {
         var type = (flags.header) ? "th" : "td";
-        var tag  = (flags.align)  ? "<" + type +" style=\"text-align:" + flags.align + "\">" : "<" + type + ">";
+        var tag  = (flags.align)  ? "<" + type + " style=\"text-align:" + flags.align + "\">" : "<" + type + ">";
 
         return tag + this.atLink(this.emoji(content)) + "</" + type + ">\n";
     };
 
-    markedRenderer.listitem = function(text, task) {
+    markedRenderer.listitem = function (text, task) {
         if (settings.taskList && task) {
             text = text.replace("<input ", "<input class='task-list-item-checkbox' ");
 
@@ -178,9 +165,6 @@ console.trace();
     };
 
     markedRenderer.image = function (href, title, text) {
-        const _this = this;
-
-        // href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
         if (href === null) {
             return text;
         }
@@ -191,7 +175,6 @@ console.trace();
         }
         out += '/>';
 
-        // return this.prototype.image(href, title, text);
         return out;
     }
 

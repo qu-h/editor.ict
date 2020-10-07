@@ -25,10 +25,10 @@ import { trimText } from '../prototypes/string'
 import { filterHTMLTags } from '../properties/Html'
 import { previewCodeHighlight } from '../properties/CodeHighlight'
 import { markdownToCRenderer } from '../properties/TableOfContent'
-import { resize, height, width } from '../properties/dimension'
 import { addKeyMap, removeKeyMap, registerKeyMaps } from '../properties/KeyMap'
 import { hideEvent, show, off, on, bindChangeEvent, bindScrollEvent, recreateEvent } from '../properties/events'
 import { editorInitial } from '../properties/EditorInitial';
+import { editorDimension } from '../properties/EditorDimension'
 
 class EditorMD {
     constructor (id, options) {
@@ -58,6 +58,7 @@ class EditorMD {
 
         this.doCloneMethod(editorToolbar)
         this.doCloneMethod(editorLoader)
+        this.doCloneMethod(editorDimension)
     }
 
     /**
@@ -96,10 +97,6 @@ class EditorMD {
         this.previewCodeHighlight = previewCodeHighlight
 
         this.markdownToCRenderer = markdownToCRenderer
-
-        this.resize = resize
-        this.height = height
-        this.width = width
 
         this.addKeyMap = addKeyMap
         this.removeKeyMap = removeKeyMap

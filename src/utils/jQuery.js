@@ -8,6 +8,7 @@ if (typeof $ === 'undefined') {
     $ = window.jQuery
 }
 
+
 export {
     $
 }

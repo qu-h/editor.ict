@@ -12,7 +12,6 @@ export default class EditorLoader {
         var editormd = this
         var settings = this.settings
         var loadPath = settings.path
-        const { isIE8 } = this
         var promises = [];
 
         this.loadCSS(loadPath + "codemirror/codemirror.min")
@@ -34,78 +33,36 @@ export default class EditorLoader {
         promises.push(editormd.loadScript(loadPath + "codemirror/modes.min"))
         promises.push(editormd.loadScript(loadPath + "codemirror/addons.min"))
 
-        Promise.all(promises).then(function (result1) {
-            console.log('Script loaded from:', result1);
-        }, () => {
+        promises.push(
+            editormd.loadScript(loadPath + "marked.min", () => {
+                editormd.$marked = marked;
+            })
+        );
+
+        Promise.all(promises).then(() => {
             editormd.setCodeMirror()
 
             if (settings.mode !== 'gfm' && settings.mode !== 'markdown') {
                 editormd.loadedDisplay()
-                return false
+                return
             }
             editormd.setToolbar()
+        });
 
-            editormd.loadScript(loadPath + "marked.min", () => {
-                editormd.$marked = marked;
-            }).then(function () {
-                console.log(`==== load marder success`, editormd.$marked)
-                if (settings.previewCodeHighlight) {
-                    editormd.loadScript(loadPath + "prettify.min").then(() => {
-                        editormd.loadFlowChartOrSequenceDiagram()
-                    })
-                } else {
-                    editormd.loadFlowChartOrSequenceDiagram()
-                }
+        if (settings.previewCodeHighlight) {
+            editormd.loadScript(loadPath + "prettify.min").then(() => {
+                editormd.loadFlowChartOrSequenceDiagram()
             })
-        })
+        } else {
+            editormd.loadFlowChartOrSequenceDiagram()
+        }
 
-        /*
-        editormd.loadScript(loadPath + "codemirror/codemirror.min", function () {
-            editormd.$CodeMirror = CodeMirror;
-
-            editormd.loadScript(loadPath + "codemirror/modes.min", function () {
-                editormd.loadScript(loadPath + 'codemirror/addons.min', function () {
-                    editormd.setCodeMirror()
-
-                    if (settings.mode !== 'gfm' && settings.mode !== 'markdown') {
-                        editormd.loadedDisplay()
-                        return false
-                    }
-                    editormd.setToolbar()
-
-                    editormd.loadScript(loadPath + "marked.min", () => {
-                        editormd.$marked = marked;
-                    }).then(function () {
-                        console.log(`==== load marder success`, editormd.$marked)
-                        if (settings.previewCodeHighlight) {
-                            editormd.loadScript(loadPath + "prettify.min").then(() => {
-                                editormd.loadFlowChartOrSequenceDiagram()
-                            })
-                        } else {
-                            editormd.loadFlowChartOrSequenceDiagram()
-                        }
-                    })
-                    // editormd.loadScript(loadPath + "marked.min", function () {
-                    //     editormd.$marked = marked;
-
-                    //     if (settings.previewCodeHighlight) {
-                    //         editormd.loadScript(loadPath + "prettify.min", function () {
-                    //             loadFlowChartOrSequenceDiagram()
-                    //         })
-                    //     } else {
-                    //         loadFlowChartOrSequenceDiagram()
-                    //     }
-                    // })
-                })
-            })
-        })
-        */
         return this
     }
 
     loadFlowChartOrSequenceDiagram () {
         const editormd = this;
-        console.log(`=============editormd`,{editormd}, this)
+
         const { isIE8, settings } = this;
         const loadPath = settings.path
 
@@ -200,7 +157,7 @@ export default class EditorLoader {
             script.id = fileName.replace(/[./]+/g, '-')
             script.type = 'text/javascript'
             script.src = fileName + '.js'
-
+            script.async = false;
             if (isIE8) {
                 script.onreadystatechange = function () {
                     if (script.readyState) {
@@ -267,13 +224,11 @@ export default class EditorLoader {
     loadedDisplay (recreate) {
         recreate             = recreate || false
 
-        var _this            = this
-        var editor           = this.editor
-        var preview          = this.preview
-        var settings         = this.settings
+        var editormd            = this
+        const { editor, preview, settings } = editormd
 
-        this.containerMask.hide()
-        this.save();
+        editormd.containerMask.hide()
+        editormd.save();
 
         if (settings.watch) {
             preview.show();
@@ -281,11 +236,11 @@ export default class EditorLoader {
 
         editor.data("oldWidth", editor.width()).data("oldHeight", editor.height()); // 为了兼容Zepto
 
-        this.resize();
+        editormd.resize();
 
-        this.registerKeyMaps();
+        editormd.registerKeyMaps();
 
-        window.addEventListener("resize", _this.resize);
+        window.addEventListener("resize", () => { editormd.resize() });
 
         this.bindScrollEvent().bindChangeEvent();
 
@@ -296,15 +251,6 @@ export default class EditorLoader {
         this.state.loaded = true;
 
         return this;
-    }
-}
-
-function loadjQuery () {
-    if (window.jQuery) {
-        // already loaded and ready to go
-        return Promise.resolve();
-    } else {
-        return loadScript('https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js');
     }
 }
 

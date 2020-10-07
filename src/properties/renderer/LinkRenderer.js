@@ -1,5 +1,5 @@
 export default class LinkRenderer {
-    constructor(options) {
+    constructor (options) {
         this.defaults = {};
         this.options = $.extend(this.defaults, options || {}); 
     }
