@@ -108,7 +108,7 @@ export function bindScrollEvent () {
             }
 
             if (scrollTop === 0) {
-                preview.scrollTop(0);
+                preview.scrollTop = 0
             } else if (scrollTop + height >= elm.scrollHeight - 16) {
                 preview.scrollTop = preview.scrollHeight;
             }  else {
@@ -132,7 +132,7 @@ export function bindScrollEvent () {
             var codeView  = codeMirror.find(".CodeMirror-scroll");
 
             if (scrollTop === 0) {
-                codeView.scrollTop(0);
+                codeView.scrollTop = 0
             } else if (scrollTop + height >= elm.scrollHeight) {
                 codeView.scrollTop = codeView.scrollHeight
             } else {

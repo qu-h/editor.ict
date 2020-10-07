@@ -9,15 +9,7 @@ import { regexDefault } from '../const/RegExp'
 
 // import { loadQueues, loadCSS, loadScript, loadedDisplay } from '../prototypes/loader'
 import { editorLoader } from '../prototypes/loader'
-import {
-    setCodeMirrorTheme,
-    setCodeMirror,
-    getCodeMirrorOption,
-    setCodeMirrorOption
-} from '../libraries/codeMirror'
-
 import { editorToolbar } from '../prototypes/toolbar'
-
 import { mouseOrTouch } from '../events/mouse'
 import { editorSave } from '../properties/EditorSave'
 import { markedRenderer } from '../properties/renderer/MarkedRenderer'
@@ -25,10 +17,12 @@ import { trimText } from '../prototypes/string'
 import { filterHTMLTags } from '../properties/Html'
 import { previewCodeHighlight } from '../properties/CodeHighlight'
 import { markdownToCRenderer } from '../properties/TableOfContent'
-import { addKeyMap, removeKeyMap, registerKeyMaps } from '../properties/KeyMap'
+// import { addKeyMap, removeKeyMap, registerKeyMaps } from '../properties/EditorKeyMap'
 import { hideEvent, show, off, on, bindChangeEvent, bindScrollEvent, recreateEvent } from '../properties/events'
 import { editorInitial } from '../properties/EditorInitial';
 import { editorDimension } from '../properties/EditorDimension'
+import { editorKeyMap }  from '../properties/EditorKeyMap'
+import { editorCodeMirror } from '../libraries/EditorCodeMirror'
 
 class EditorMD {
     constructor (id, options) {
@@ -59,6 +53,8 @@ class EditorMD {
         this.doCloneMethod(editorToolbar)
         this.doCloneMethod(editorLoader)
         this.doCloneMethod(editorDimension)
+        this.doCloneMethod(editorKeyMap)
+        this.doCloneMethod(editorCodeMirror)
     }
 
     /**
@@ -97,10 +93,6 @@ class EditorMD {
         this.previewCodeHighlight = previewCodeHighlight
 
         this.markdownToCRenderer = markdownToCRenderer
-
-        this.addKeyMap = addKeyMap
-        this.removeKeyMap = removeKeyMap
-        this.registerKeyMaps = registerKeyMaps
 
         this.hide = hideEvent
         this.show = show
@@ -181,9 +173,9 @@ class EditorMD {
             (typeof define === "function" && define.amd) ||
             !settings.autoLoadModules
         ) {
-            if (typeof window.CodeMirror !== "undefined") {
-                editormd.$CodeMirror = window.CodeMirror;
-            }
+            // if (typeof window.CodeMirror !== "undefined") {
+            //     editormd.$CodeMirror = window.CodeMirror;
+            // }
 
             if (typeof window.marked !== "undefined") {
                 editormd.$marked = window.marked;
@@ -199,25 +191,6 @@ class EditorMD {
         return this
     }
 }
-
-// const editorToolbar = new EditorToolbar();
-// Object.setPrototypeOf(EditorMD, editorToolbar.prototype);
-
-// EditorMD.showToolbar = EditorToolbar.showToolbar
-// EditorMD.prototype.hideToolbar = EditorToolbar.hideToolbar
-// EditorMD.prototype.setToolbarAutoFixed = EditorToolbar.setToolbarAutoFixed
-// EditorMD.prototype.setToolbar = EditorToolbar.setToolbar
-// EditorMD.prototype.getToolbarHandles = getToolbarHandles
-// EditorMD.prototype.setToolbarHandler = setToolbarHandler
-
-// EditorMD.prototype.loadQueues = editorLoader.loadQueues
-// EditorMD.prototype.loadCSS = editorLoader.loadCSS
-// EditorMD.prototype.loadScript = editorLoader.loadScript
-
-EditorMD.prototype.setCodeMirrorTheme = setCodeMirrorTheme
-EditorMD.prototype.setCodeMirror = setCodeMirror
-EditorMD.prototype.getCodeMirrorOption = getCodeMirrorOption
-EditorMD.prototype.setCodeMirrorOption = setCodeMirrorOption
 
 EditorMD.prototype.trim = trimText;
 

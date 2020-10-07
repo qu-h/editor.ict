@@ -1,4 +1,3 @@
-import { $ } from '../utils/jQuery'
 /**
  * Parse & Saving Markdown source code
  *

@@ -14,7 +14,7 @@ export default class EditorLoader {
         var loadPath = settings.path
         var promises = [];
 
-        this.loadCSS(loadPath + "codemirror/codemirror.min")
+        this.loadCSS(`${loadPath}codemirror/codemirror.min`)
 
         if (settings.searchReplace && !settings.readOnly) {
             this.loadCSS(loadPath + "codemirror/addon/dialog/dialog")
@@ -30,6 +30,7 @@ export default class EditorLoader {
                 editormd.$CodeMirror = CodeMirror;
             })
         );
+
         promises.push(editormd.loadScript(loadPath + "codemirror/modes.min"))
         promises.push(editormd.loadScript(loadPath + "codemirror/addons.min"))
 
