@@ -84,6 +84,10 @@ export function markedRenderer (markdownToC, options) {
         // } else {
         header.append(this.atLink(this.emoji(text)));
         // }
+
+        if (typeof header.nodeName !== 'undefined') {
+            return header.outerHTML;
+        }
         return header.prop('outerHTML');
     };
 

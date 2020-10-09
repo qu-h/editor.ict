@@ -8,7 +8,7 @@ function EditorToolbar () {
      * @param   {Function} [callback=function(){}] 回调函数
      * @returns {editormd}  返回editormd的实例对象
      */
-    this.showToolbar = function(callback) {
+    this.showToolbar = function (callback) {
         var settings = this.settings
 
         if (settings.readOnly) {
@@ -61,7 +61,7 @@ function EditorToolbar () {
      * @returns {editormd}  返回editormd的实例对象
      */
 
-    this.setToolbarAutoFixed =function(fixed) {
+    this.setToolbarAutoFixed = function (fixed) {
         var state    = this.state
         var editor   = this.editor
         var toolbar  = this.toolbar
@@ -116,7 +116,6 @@ function EditorToolbar () {
      */
 
     this.setToolbarHandler = function () {
-        var _this               = this
         const editormd = this
         var settings            = this.settings
 
@@ -125,10 +124,8 @@ function EditorToolbar () {
         }
 
         var toolbar             = this.toolbar
-        var cm                  = this.cm
         var classPrefix         = this.classPrefix
         var toolbarIcons        = toolbar.querySelectorAll(`.${classPrefix}menu > li > a`)
-        var toolbarIconHandlers = this.getToolbarHandles()
 
         const iconEvents = editormd.mouseOrTouch("click", "touchend");
 
@@ -144,6 +141,9 @@ function EditorToolbar () {
     }
 
     function iconEvent () {
+        const editormd = this;
+        const { cm } = editormd;
+
         var icon                = $(this).children(".fa")
         var name                = icon.attr("name")
         var cursor              = cm.getCursor()
@@ -153,12 +153,12 @@ function EditorToolbar () {
             return
         }
 
-        _this.activeIcon = icon
+        editormd.activeIcon = icon
 
         if (typeof toolbarIconHandlers[name] !== "undefined") {
-            $.proxy(toolbarIconHandlers[name], _this)(cm)
+            $.proxy(toolbarIconHandlers[name], editormd)(cm)
         } else if (typeof settings.toolbarHandlers[name] !== "undefined") {
-            $.proxy(settings.toolbarHandlers[name], _this)(cm, icon, cursor, selection)
+            $.proxy(settings.toolbarHandlers[name], editormd)(cm, icon, cursor, selection)
         }
 
         if (

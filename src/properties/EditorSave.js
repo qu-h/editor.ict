@@ -1,3 +1,5 @@
+import { runProxy } from "../utils/Object";
+
 /**
  * Parse & Saving Markdown source code
  *
@@ -103,12 +105,12 @@ export function editorSave () {
         if (settings.tex) {
             if (!editormd.kaTeXLoaded && settings.autoLoadModules)  {
                 editormd.loadKaTeX(function () {
-                    editormd.$katex = katex;
+                    editormd.$katex = window.katex;
                     editormd.kaTeXLoaded = true;
                     _this.katexRender();
                 });
             } else {
-                editormd.$katex = katex;
+                editormd.$katex = window.katex;
                 this.katexRender();
             }
         }
@@ -122,7 +124,7 @@ export function editorSave () {
         }
 
         if (state.loaded) {
-            $.proxy(settings.onchange, this)();
+            runProxy(settings.onchange, this)();
         }
     }
 

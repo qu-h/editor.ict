@@ -1,6 +1,7 @@
 
 import EditorRenderer from './EditorRenderer'
 import { trimText } from '../../prototypes/string'
+import { numberRand } from '../../utils/Number';
 
 export default class HeadingRenderder extends EditorRenderer {
     constructor (options) {
@@ -41,7 +42,7 @@ export default class HeadingRenderder extends EditorRenderer {
 
         var id        = (isChinese) ? escape(text).replace(/\%/g, "") : text.toLowerCase().replace(/[^\w]+/g, "-");
         if (_headingIds.indexOf(id) >= 0) {
-            id += mdUtil.rand(100, 999999);
+            id += numberRand(100, 999999);
         }
 
         _headingIds.push(id);
@@ -58,10 +59,12 @@ export default class HeadingRenderder extends EditorRenderer {
         const referecenLink = document.createElement(`a`)
         referecenLink.classList.add(`reference-link`)
         referecenLink.name = 'text'
-        header.append(referecenLink);
+        header.appendChild(referecenLink);
 
-        const octiconLink = $(`<span/>`, { class: 'header-link octicon octicon-link' });
-        header.append(octiconLink);
+        // const octiconLink = $(`<span/>`, { class: 'header-link octicon octicon-link' });
+        const octiconLink = document.createElement('span')
+        octiconLink.classList.add(`header-link`, `octicon`, `octicon-link`)
+        header.appendChild(octiconLink);
 
         return header;
     }

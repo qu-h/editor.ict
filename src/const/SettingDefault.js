@@ -268,7 +268,27 @@ const toolbarModes = {
     ]
 }
 
-module.exports = {
+export default class EditorSettings {
+    constructor () {
+        this.options = settingDefault
+        this.initApp()
+    }
+
+    initApp () {
+        this.classPrefix = classPrefix;
+        this.title        = titleDefault;
+        this.version      = "1.5.0";
+        this.homePage     = "https://pandao.github.io/editor.md/";
+    }
+
+    getClassName (str) {
+        return `${this.classPrefix}${str}`
+    }
+}
+
+export const editorSettings = new EditorSettings()
+
+export {
     classPrefix,
     titleDefault,
     settingDefault,

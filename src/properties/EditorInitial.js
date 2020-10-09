@@ -1,11 +1,11 @@
-import { classPrefix } from '../const/SettingDefault'
+import { editorSettings as setting } from '../const/SettingDefault'
 
 class EditorInitial {
     initEditor (id) {
         const { settings } = this;
         let editor
 
-        if (id instanceof HTMLElement) {
+        if (typeof id.nodeName !== 'undefined') {
             const element = id;
             editor = id;
             id = element.id.length > 0 ? element.id : settings.id;
@@ -21,8 +21,8 @@ class EditorInitial {
 
         this.classNames   = {
             textarea : {
-                html     : `${classPrefix}html-textarea`,
-                markdown : `${classPrefix}markdown-textarea`
+                html     : setting.getClassName(`html-textarea`),
+                markdown : setting.getClassName(`markdown-textarea`)
             }
         };
 
@@ -35,10 +35,10 @@ class EditorInitial {
             editor.classList.add("editormd");
         }
 
-        editor.classList.add(`${classPrefix}vertical`)
+        editor.classList.add(setting.getClassName(`vertical`))
 
         if (settings.theme !== "") {
-            editor.classList.add(`${classPrefix}theme-${settings.theme}`);
+            editor.classList.add(setting.getClassName(`theme-${settings.theme}`));
         }
 
         editor.style.width = (typeof settings.width  === "number") ? settings.width  + "px" : settings.width;
@@ -56,30 +56,28 @@ class EditorInitial {
 
         if (!settings.readOnly) {
             const closeBtn = document.createElement("A");
-            closeBtn.classList.add(`fa`, `fa-close`, `${classPrefix}preview-close-btn`)
+            closeBtn.classList.add(`fa`, `fa-close`, setting.getClassName(`preview-close-btn`))
             closeBtn.href = 'javascript:'
             editor.appendChild(closeBtn);
         }
     }
 
     initPreview () {
-        const { settings } = this;
-
         this.previewContainer = document.createElement("div")
-        this.previewContainer.classList.add(`markdown-body`, `${classPrefix}preview-container`)
+        this.previewContainer.classList.add(`markdown-body`, setting.getClassName('preview-container'))
 
         this.preview          = document.createElement("div")
-        this.preview.classList.add(`${classPrefix}preview`)
+        this.preview.classList.add(`${setting.classPrefix}preview`)
         this.preview.appendChild(this.previewContainer)
         this.editor.appendChild(this.preview);
 
-        if (settings.previewTheme !== "") {
-            this.preview.classList.add(classPrefix + "preview-theme-" + settings.previewTheme);
+        if (setting.options.previewTheme !== "") {
+            this.preview.classList.add(setting.getClassName(`preview-theme-${setting.options.previewTheme}`))
         }
     }
 
     initSaveHtml () {
-        const { saveHTMLToTextarea } = this.settings;
+        const { saveHTMLToTextarea } = setting.options;
         const { textarea } = this.classNames;
         const { id } = this;
 
@@ -92,8 +90,8 @@ class EditorInitial {
     }
 
     initMarkdownTextarea () {
-        const { editor, settings, id } = this;
-
+        const { editor, id } = this;
+        const settings = setting.options;
         // var markdownTextarea = this.markdownTextarea = editor.children("textarea");
         var markdownTextarea = this.markdownTextarea = editor.querySelector('textarea');
 
@@ -121,18 +119,14 @@ class EditorInitial {
     }
 
     initMask () {
-        // "<div class=\"" + classPrefix + "container-mask\" style=\"display:block;\"></div>"
-        // this.mask = editor.getElementsByClassName(`${classPrefix}mask`)
-
         const { editor } = this;
 
         this.containerMask = document.createElement("div")
-        this.containerMask.classList.add(`${classPrefix}container-mask`)
+        this.containerMask.classList.add(setting.getClassName(`container-mask`))
         editor.appendChild(this.containerMask)
 
         this.mask = document.createElement("div")
-        this.mask.classList.add(`${classPrefix}mask`)
-        // this.mask.style.display = 'block'
+        this.mask.classList.add(setting.getClassName(`mask`))
         editor.appendChild(this.mask)
     }
 }

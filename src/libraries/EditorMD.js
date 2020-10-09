@@ -1,6 +1,5 @@
 import {
     settingDefault,
-    classPrefix,
     titleDefault,
     toolbarModes
 } from '../const/SettingDefault'
@@ -75,14 +74,9 @@ class EditorMD {
             plugin: []
         }
 
-        this.title        = this.$name = titleDefault;
-        this.version      = "1.5.0";
-        this.homePage     = "https://pandao.github.io/editor.md/";
-        this.classPrefix  = classPrefix;
 
         this.toolbarModes = toolbarModes
         this.mouseOrTouch = mouseOrTouch
-        // this.loadedDisplay = editorLoader.loadedDisplay
         this.save = editorSave
 
         this.regexs = regexDefault;
@@ -111,7 +105,7 @@ class EditorMD {
             options = id
         }
 
-        const settings = $.extend(true, {}, settingDefault, options)
+        const settings = { ...{}, ...settingDefault, ...options }
         this.settings = settings
         this.lang            = settings.lang;
 
@@ -124,6 +118,8 @@ class EditorMD {
         }
 
         settings.pluginPath = (settings.pluginPath === '') ? settings.path + '../plugins/' : settings.pluginPath
+
+        console.log(`==== initEditor`, { settings, options, settingDefault })
         this.state.watching = settings.watch
 
         this.initEditor(id)

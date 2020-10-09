@@ -27,7 +27,7 @@ export default class EditorLoader {
 
         promises.push(
             editormd.loadScript(loadPath + "codemirror/codemirror.min", () => {
-                editormd.$CodeMirror = CodeMirror;
+                editormd.$CodeMirror = window.CodeMirror;
             })
         );
 
@@ -36,9 +36,13 @@ export default class EditorLoader {
 
         promises.push(
             editormd.loadScript(loadPath + "marked.min", () => {
-                editormd.$marked = marked;
+                editormd.$marked = window.marked;
             })
         );
+
+        if (settings.previewCodeHighlight) {
+            promises.push(editormd.loadScript(loadPath + "prettify.min"));
+        }
 
         Promise.all(promises).then(() => {
             editormd.setCodeMirror()
@@ -48,15 +52,8 @@ export default class EditorLoader {
                 return
             }
             editormd.setToolbar()
-        });
-
-        if (settings.previewCodeHighlight) {
-            editormd.loadScript(loadPath + "prettify.min").then(() => {
-                editormd.loadFlowChartOrSequenceDiagram()
-            })
-        } else {
             editormd.loadFlowChartOrSequenceDiagram()
-        }
+        });
 
         return this
     }
