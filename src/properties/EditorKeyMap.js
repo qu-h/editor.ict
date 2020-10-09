@@ -42,7 +42,7 @@ class EditorKeyMap {
 
         keyMap              = keyMap || null;
 
-        console.log(`resigKeys`,{disabledKeyMaps, keyMap, keyMaps, editormd})
+        // console.log(`resigKeys`,{disabledKeyMaps, keyMap, keyMaps, editormd})
 
         if (keyMap) {
             for (var i in keyMap) {

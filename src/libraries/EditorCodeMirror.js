@@ -1,5 +1,3 @@
-// import CodeMirror from 'codemirror'
-
 // if (typeof window.CodeMirror !== "undefined") {
 //     // editormd.$CodeMirror = window.CodeMirror;
 // }
@@ -76,7 +74,7 @@ class EditorCodeMirror {
 
         editormd.codeMirror = codeMirror
         editormd.cm         = editorCodeMirror
-console.log(` ==add code mirror `,{codeMirror})
+        // console.log(` ==add code mirror `,{codeMirror})
         return editormd
     }
 

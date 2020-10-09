@@ -77,13 +77,13 @@ export function markedRenderer (markdownToC, options) {
     const headingRenderder = new HeadingRenderder({ markdownToC : markdownToC || [], headerPrefix : markedRenderer.options.headerPrefix });
 
     markedRenderer.heading = function (text, level) {
-        var hasLinkReg     = /\s*\<a\s*href\=\"(.*)\"\s*([^\>]*)\>(.*)\<\/a\>\s*/;
+        // var hasLinkReg     = /\s*\<a\s*href\=\"(.*)\"\s*([^\>]*)\>(.*)\<\/a\>\s*/;
         const header = headingRenderder.execute(text, level);
-        if (hasLinkReg) {
-            header.append(this.atLink(this.emoji(text)));
-        } else {
-            header.append(this.atLink(this.emoji(text)));
-        }
+        // if (hasLinkReg) {
+        //     header.append(this.atLink(this.emoji(text)));
+        // } else {
+        header.append(this.atLink(this.emoji(text)));
+        // }
         return header.prop('outerHTML');
     };
 

@@ -9,10 +9,10 @@ export default class HeadingRenderder extends EditorRenderer {
     }
 
     execute (text, level) {
-        let { markdownToC, headerPrefix} = this.config;
+        const { markdownToC, headerPrefix } = this.config;
 
         var _headingIds     = [];
-        var linkText       = text;
+        // var linkText       = text;
         var hasLinkReg     = /\s*\<a\s*href\=\"(.*)\"\s*([^\>]*)\>(.*)\<\/a\>\s*/;
         // var getLinkTextReg = /\s*\<a\s*([^\>]+)\>([^\>]*)\<\/a\>\s*/g;
 
@@ -28,7 +28,7 @@ export default class HeadingRenderder extends EditorRenderer {
         }
 
         text = this.trim(text);
-        
+
         var escapedText = text.toLowerCase().replace(/[^\w]+/g, "-");
 
         var toc = {
@@ -36,9 +36,9 @@ export default class HeadingRenderder extends EditorRenderer {
             level : level,
             slug  : escapedText
         };
-        
-        let isChinese = /^[\u4e00-\u9fa5]+$/.test(text);
-        
+
+        const isChinese = /^[\u4e00-\u9fa5]+$/.test(text);
+
         var id        = (isChinese) ? escape(text).replace(/\%/g, "") : text.toLowerCase().replace(/[^\w]+/g, "-");
         if (_headingIds.indexOf(id) >= 0) {
             id += mdUtil.rand(100, 999999);
@@ -49,12 +49,18 @@ export default class HeadingRenderder extends EditorRenderer {
         toc.id = id;
 
         markdownToC.push(toc);
-        
-        let header = $(`<h${level}/>`, { id: `h${level}-${headerPrefix + id}` });
-        let referecenLink = $(`<a/>`, { name: text, class: 'reference-link' });
+
+        const header = document.createElement(`h${level}`)
+        header.id = `h${level}-${headerPrefix + id}`
+        // let header = $(`<h${level}/>`, { id: `h${level}-${headerPrefix + id}` });
+        // let referecenLink = $(`<a/>`, { name: text, class: 'reference-link' });
+
+        const referecenLink = document.createElement(`a`)
+        referecenLink.classList.add(`reference-link`)
+        referecenLink.name = 'text'
         header.append(referecenLink);
 
-        let octiconLink = $(`<span/>`, { class: 'header-link octicon octicon-link' });
+        const octiconLink = $(`<span/>`, { class: 'header-link octicon octicon-link' });
         header.append(octiconLink);
 
         return header;
